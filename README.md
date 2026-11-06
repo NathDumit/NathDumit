@@ -25,7 +25,12 @@ All of these use synthetic data and show the method, not any employer's data.
 | From file to decision | An orchestrated pipeline with monitoring and tests |
 | Weighted exchange rate for treasury | Why a value-weighted average, and the guardrails around bad inputs |
 
-_Links: add the public share link of each page here._
+- [Travel revenue intelligence](https://nathdumit.github.io/NathDumit/revenue-intelligence.html)
+- [Reverse-engineering a legacy database](https://nathdumit.github.io/NathDumit/legacy-database.html)
+- [From file to decision: orchestration, monitoring and tests](https://nathdumit.github.io/NathDumit/pipeline.html)
+- [Weighted exchange rate for treasury](https://nathdumit.github.io/NathDumit/weighted-fx-rate.html)
+
+All four use fictional systems and synthetic data. [Index page](https://nathdumit.github.io/NathDumit/).
 
 ## How I work
 
