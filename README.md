@@ -29,8 +29,9 @@ All of these use synthetic data and show the method, not any employer's data.
 - [Reverse-engineering a legacy database](https://nathdumit.github.io/NathDumit/legacy-database.html)
 - [From file to decision: orchestration, monitoring and tests](https://nathdumit.github.io/NathDumit/pipeline.html)
 - [Weighted exchange rate for treasury](https://nathdumit.github.io/NathDumit/weighted-fx-rate.html)
+- [The haunted house of legacy systems (conference talk)](https://nathdumit.github.io/NathDumit/haunted-house.html)
 
-All four use fictional systems and synthetic data. [Index page](https://nathdumit.github.io/NathDumit/).
+The four case studies use fictional systems and synthetic data; the talk describes my own experience with company names removed. [Index page](https://nathdumit.github.io/NathDumit/).
 
 ## How I work
 

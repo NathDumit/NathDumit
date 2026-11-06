@@ -1,0 +1,709 @@
+<!doctype html><html lang="en"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>The haunted house of legacy systems</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Creepster&family=Outfit:wght@400;500;600;700&family=JetBrains+Mono:wght@500&display=swap">
+<style>
+:root{
+  --ink:#231e22; --plum:#2d2630; --card:#342c38; --line:#4d4256;
+  --mint:#bff2dd; --pumpkin:#f2a65a; --blue:#7aa7e6; --lav:#c4bfe0;
+  --violet:#8a86c0; --muted:#a59fb5; --text:#ebe6f0; --deep:#4b2a6b; --night:#120f12;
+  color-scheme:dark;
+}
+html,body{height:100%}
+body{background:var(--night);color:var(--text);overflow:hidden;font-family:'Outfit',Arial,sans-serif}
+*{box-sizing:border-box;margin:0}
+.deck{position:fixed;inset:0;overflow:hidden}
+.stage{position:absolute;left:50%;top:50%;width:1920px;height:1080px;transform-origin:center;overflow:hidden;background:var(--ink)}
+.slide{position:absolute;inset:0;padding:128px 128px 160px;display:flex;flex-direction:column;gap:48px;opacity:0;visibility:hidden;transition:opacity .6s ease,visibility 0s .6s;overflow:hidden}
+.slide.on{opacity:1;visibility:visible;transition:opacity .6s ease}
+.dark{background:var(--ink)} .plum{background:var(--plum)} .mintbg{background:var(--mint);color:var(--ink)}
+.center{justify-content:center;padding:128px}
+.eyebrow{font-size:28px;font-weight:700;letter-spacing:6px;text-transform:uppercase;color:var(--pumpkin)}
+.mintbg .eyebrow{color:var(--deep)}
+h1,h2{font-family:'Creepster',Impact,sans-serif;font-weight:400;letter-spacing:2px;text-transform:uppercase;color:var(--mint);text-wrap:balance}
+h1{font-size:132px;line-height:1.05;width:1040px}
+h2{font-size:88px;line-height:1.1}
+.mintbg h2{color:var(--ink)}
+.lead{font-size:44px;line-height:1.3;color:var(--lav);width:1000px}
+.byline{font-size:32px;font-weight:600;color:var(--blue)}
+.row{display:flex;gap:32px}
+.row>*{flex:1;min-width:0}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:32px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:24px;padding:40px;display:flex;flex-direction:column;gap:16px}
+.card.tight{padding:32px;gap:12px}
+.card h3{font-size:36px;font-weight:600;color:var(--pumpkin)}
+.card p{font-size:30px;line-height:1.4;color:var(--lav)}
+.card.tight h3{font-size:34px;color:var(--text)}
+.card.tight p{font-size:28px;line-height:1.35}
+.card.tight .num,.card .num,.num{font-family:'Creepster',Impact,sans-serif;font-size:64px;line-height:1;color:var(--pumpkin)}
+.card .big,.big{font-family:'Creepster',Impact,sans-serif;font-size:140px;line-height:1;letter-spacing:2px}
+.band{background:var(--mint);color:var(--ink);padding:32px 48px;border-radius:24px}
+.band p{font-size:34px;line-height:1.35;font-weight:600}
+.li{font-size:32px;font-weight:600;color:var(--mint);text-decoration:none;border-bottom:2px solid var(--pumpkin);align-self:flex-start}
+.qr{width:200px;height:200px;flex:none;background:#ebe6f0;border-radius:16px;padding:10px}
+.qr svg{width:100%;height:100%;display:block}
+.foot{position:absolute;left:128px;bottom:64px;width:1664px;font-size:24px;color:var(--muted)}
+.mintbg .foot{color:#3a2a4a}
+aside{display:none}
+
+/* ---------- entradas ---------- */
+.on .rise{animation:rise .8s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*140ms + 150ms)}
+@keyframes rise{from{opacity:0;transform:translateY(48px)}}
+.on .pop{animation:pop .7s cubic-bezier(.3,1.5,.5,1) both;animation-delay:calc(var(--i,0)*180ms + 300ms)}
+@keyframes pop{from{opacity:0;transform:scale(.6) rotate(-3deg)}}
+.flipwrap{perspective:1600px}
+.on .flip{animation:flip .9s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i,0)*260ms + 300ms);transform-origin:left center}
+@keyframes flip{from{opacity:0;transform:rotateY(-80deg)}}
+
+/* ---------- fantasmas e cia ---------- */
+.float{animation:float 4s ease-in-out infinite}
+@keyframes float{50%{transform:translateY(-22px)}}
+.blink{transform-box:fill-box;transform-origin:center;animation:blink 5s infinite}
+@keyframes blink{0%,91%,97%,100%{transform:scaleY(1)}94%{transform:scaleY(.1)}}
+.flicker{animation:flicker 7s infinite}
+@keyframes flicker{0%,40%,44%,47%,100%{opacity:1}42%{opacity:.25}45.5%{opacity:.55}}
+.bat{position:absolute;width:110px;height:56px;left:-160px;pointer-events:none}
+.on .bat{animation:fly var(--d,11s) linear infinite;animation-delay:var(--dl,0s)}
+.bat path{transform-box:fill-box;transform-origin:center;animation:flap .28s ease-in-out infinite alternate}
+@keyframes fly{0%{transform:translate(0,0)}25%{transform:translate(560px,-60px)}50%{transform:translate(1100px,40px)}75%{transform:translate(1650px,-50px)}100%{transform:translate(2300px,10px)}}
+@keyframes flap{to{transform:scaleY(.35)}}
+.fog{position:absolute;left:-30%;bottom:-120px;width:160%;height:340px;pointer-events:none;z-index:5;
+  background:radial-gradient(ellipse 30% 50% at 20% 60%,rgba(235,230,240,.10),transparent 70%),radial-gradient(ellipse 25% 45% at 60% 70%,rgba(191,242,221,.08),transparent 70%),radial-gradient(ellipse 30% 50% at 90% 55%,rgba(235,230,240,.09),transparent 70%);
+  filter:blur(8px);animation:drift 26s ease-in-out infinite alternate}
+@keyframes drift{to{transform:translateX(18%)}}
+
+/* chegada: aranha */
+.spider{position:absolute;left:1770px;top:0;width:90px;height:420px;pointer-events:none}
+.on .spider .drop{animation:spdrop 2.4s cubic-bezier(.3,1.4,.5,1) .4s both,bob 3.2s ease-in-out 2.8s infinite}
+@keyframes spdrop{from{transform:translateY(-330px)}}
+@keyframes bob{50%{transform:translateY(-26px)}}
+.qs span{position:absolute;font-family:'Creepster',Impact,sans-serif;color:var(--violet);opacity:0;pointer-events:none}
+.on .qs span{animation:qfade 5s ease-in-out infinite;animation-delay:var(--dl)}
+@keyframes qfade{0%,100%{opacity:0;transform:translateY(10px)}40%,60%{opacity:.35;transform:translateY(-10px)}}
+
+/* susto */
+.on .shake{animation:shake .5s ease-in-out 1.6s 2}
+@keyframes shake{20%{transform:translateX(-10px) rotate(-1deg)}40%{transform:translateX(10px) rotate(1deg)}60%{transform:translateX(-7px)}80%{transform:translateX(7px)}}
+
+/* cemitério */
+.tomb{background:var(--card);border:2px solid var(--line);border-radius:120px 120px 24px 24px;padding:56px 32px 40px;display:flex;flex-direction:column;gap:16px;text-align:center;position:relative}
+.tomb .rip{font-family:'Creepster',Impact,sans-serif;font-size:44px;letter-spacing:4px;color:var(--violet)}
+.tomb h3{font-size:34px;font-weight:600;color:var(--pumpkin)}
+.tomb p{font-size:28px;line-height:1.4;color:var(--lav)}
+.on .tomb{animation:tombrise 1.1s cubic-bezier(.3,1.35,.5,1) both;animation-delay:calc(var(--i,0)*220ms + 300ms)}
+@keyframes tombrise{from{opacity:0;transform:translateY(420px) rotate(-6deg)}}
+.tomb .wisp{position:absolute;left:50%;top:-30px;width:70px;margin-left:-35px;opacity:0}
+.on .tomb .wisp{animation:wisp 6s ease-in-out infinite;animation-delay:calc(var(--i,0)*1.4s + 2s)}
+@keyframes wisp{0%{opacity:0;transform:translateY(60px) scale(.5)}25%{opacity:.85}70%{opacity:.5;transform:translateY(-20px) scale(.9)}100%{opacity:0;transform:translateY(-50px) scale(1)}}
+
+/* exorcismo */
+.graph line{stroke:var(--deep);stroke-width:4;stroke-dasharray:160;stroke-dashoffset:160}
+.on .graph line{animation:draw .7s ease-out both;animation-delay:calc(var(--i,0)*250ms + 1.2s)}
+@keyframes draw{to{stroke-dashoffset:0}}
+.graph circle{fill:var(--deep)}
+.on .graph circle{animation:pulse 2s ease-in-out infinite;animation-delay:calc(var(--i,0)*300ms);transform-box:fill-box;transform-origin:center}
+@keyframes pulse{50%{transform:scale(1.35)}}
+
+/* pegadinhas */
+.peek{position:absolute;right:118px;top:110px;width:150px;height:150px;overflow:hidden;pointer-events:none}
+.peek svg{position:absolute;left:15px;top:150px;width:120px}
+.on .peek svg{animation:peek 6s ease-in-out 1.5s infinite}
+@keyframes peek{0%,15%,85%,100%{transform:translateY(0)}30%,70%{transform:translateY(-120px)}45%{transform:translateY(-120px) rotate(-8deg)}55%{transform:translateY(-120px) rotate(8deg)}}
+
+/* prova */
+.stamp{position:absolute;left:150px;top:770px;padding:14px 36px;border:8px solid var(--deep);border-radius:16px;color:var(--deep);font-family:'Creepster',Impact,sans-serif;font-size:64px;letter-spacing:6px;transform:rotate(-10deg);opacity:0;text-transform:uppercase}
+.on .stamp{animation:stamp .5s cubic-bezier(.2,1.6,.4,1) 1.9s both}
+@keyframes stamp{from{opacity:0;transform:rotate(-10deg) scale(3)}to{opacity:.9;transform:rotate(-10deg) scale(1)}}
+
+/* saídas: lanterna */
+.torch{position:absolute;inset:0;z-index:6;pointer-events:none;opacity:0}
+.torch i{position:absolute;left:-1000px;top:-1000px;width:3920px;height:3080px;background:radial-gradient(circle at 50% 50%,transparent 0,transparent 170px,rgba(10,8,10,.96) 280px)}
+.on .torch{animation:torchfade 3.2s ease-in both}
+.on .torch i{animation:sweep 2.4s ease-in-out both}
+@keyframes torchfade{0%,70%{opacity:1}100%{opacity:0}}
+@keyframes sweep{0%{transform:translate(-560px,-80px)}45%{transform:translate(480px,120px)}100%{transform:translate(0,0)}}
+.glow{border-top:8px solid var(--mint)}
+.on .glow{animation:glow 2.6s ease-in-out 3s infinite}
+@keyframes glow{50%{box-shadow:0 -10px 40px -6px rgba(191,242,221,.55)}}
+
+/* cópia velha: terminal */
+.term{background:var(--night);border:2px solid var(--line);border-radius:20px;padding:24px 32px;font-family:'JetBrains Mono',monospace;font-size:26px;line-height:1.6;color:var(--mint)}
+.term div{white-space:nowrap;overflow:hidden;width:0;border-right:3px solid transparent}
+.on .term div{animation:type var(--t,1.2s) steps(var(--n)) forwards,caret .8s step-end infinite;animation-delay:var(--dl),var(--dl)}
+.term .err{color:var(--pumpkin)}
+@keyframes type{to{width:calc(var(--n) * 1ch)}}
+@keyframes caret{50%{border-color:var(--mint)}}
+
+/* regras: velas */
+.candle{width:34px;height:64px;flex:none}
+.flame{transform-box:fill-box;transform-origin:50% 100%;animation:flame 1.1s ease-in-out infinite alternate}
+@keyframes flame{0%{transform:scale(1,1) rotate(-3deg);opacity:.9}50%{transform:scale(.85,1.15) rotate(3deg)}100%{transform:scale(1.05,.9) rotate(-2deg);opacity:1}}
+.rulehead{display:flex;align-items:center;gap:20px}
+
+/* quem: rota */
+.route{position:relative;height:40px;margin:0 60px}
+.route .track{position:absolute;left:0;right:0;top:18px;height:4px;background:repeating-linear-gradient(90deg,var(--line) 0 18px,transparent 18px 32px)}
+.route .trail{position:absolute;left:0;top:18px;height:4px;width:0;background:var(--pumpkin)}
+.route .walker{position:absolute;left:0;top:0;width:40px;height:40px;margin-left:-20px}
+.on .route .trail{animation:trail 3s ease-in-out .9s forwards}
+.on .route .walker{animation:walk 3s ease-in-out .9s forwards}
+@keyframes trail{to{width:100%}}
+@keyframes walk{to{left:100%}}
+
+/* grimório */
+.spell{background:var(--card);border:2px solid var(--line);border-radius:24px;padding:28px 36px;display:flex;flex-direction:column;gap:10px;position:relative}
+.spell .tag{font-size:22px;font-weight:700;letter-spacing:4px;text-transform:uppercase;color:var(--violet)}
+.spell h3{font-size:36px;font-weight:600;color:var(--pumpkin);line-height:1.15}
+.spell p{font-size:28px;line-height:1.36;color:var(--lav)}
+
+/* poção */
+.potion{display:flex;gap:64px;align-items:center}
+.ingredients{flex:1;display:flex;flex-direction:column;gap:18px;list-style:none;padding:0}
+.ingredients li{font-size:34px;line-height:1.3;color:var(--lav);display:flex;gap:20px;align-items:baseline}
+.ingredients li b{font-family:'Creepster',Impact,sans-serif;font-weight:400;font-size:40px;color:var(--pumpkin);min-width:56px}
+.on .ingredients li{animation:dropin .6s cubic-bezier(.3,1.4,.5,1) both;animation-delay:calc(var(--i,0)*320ms + 400ms)}
+@keyframes dropin{from{opacity:0;transform:translateX(-60px)}}
+.cauldron{width:560px;flex:none}
+.bubble{fill:var(--mint);opacity:0}
+.on .bubble{animation:bubble 2.6s ease-in infinite;animation-delay:var(--dl)}
+@keyframes bubble{0%{opacity:0;transform:translateY(0) scale(.5)}15%{opacity:.85}100%{opacity:0;transform:translateY(-230px) scale(1.2)}}
+.brew{animation:brew 3s ease-in-out infinite alternate}
+@keyframes brew{to{fill:#9fe6c9}}
+.steam{fill:none;stroke:var(--mint);stroke-width:6;stroke-linecap:round;opacity:.0;stroke-dasharray:200;stroke-dashoffset:200}
+.on .steam{animation:steam 3.4s ease-in-out infinite;animation-delay:var(--dl)}
+@keyframes steam{0%{opacity:0;stroke-dashoffset:200}30%{opacity:.5}100%{opacity:0;stroke-dashoffset:0;transform:translateY(-40px)}}
+
+/* fim */
+.wave{transform-box:fill-box;transform-origin:85% 90%;animation:wave 1.4s ease-in-out infinite alternate}
+@keyframes wave{from{transform:rotate(-14deg)}to{transform:rotate(18deg)}}
+
+
+/* bancos */
+.db{padding:32px;gap:14px}
+.db h3{font-size:34px}
+.db p{font-size:27px;line-height:1.38}
+.db .ex{font-size:22px;letter-spacing:1px;color:var(--muted)}
+.haunted{border-color:var(--pumpkin)}
+.dbart{width:100%;height:130px}
+.dbart rect{fill:var(--night);stroke:var(--violet);stroke-width:3}
+.dbart line{stroke:var(--violet);stroke-width:2}
+.dbart text{font-family:'JetBrains Mono',monospace;font-size:15px;fill:var(--lav);text-anchor:middle}
+.dbart.doc text{text-anchor:start;font-size:15px;fill:var(--mint)}
+.dbart .k{fill:var(--pumpkin)}
+.dbart .link{fill:none;stroke:var(--mint);stroke-width:5;stroke-dasharray:130;stroke-dashoffset:130}
+.on .dbart .link{animation:draw 1s ease-out 1.2s forwards}
+.on .dbart .sheet{animation:rise .7s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i)*300ms + 1s)}
+.dbart.dbf rect{stroke:var(--pumpkin);stroke-dasharray:8 6}
+.dbart.dbf line{stroke:var(--pumpkin)}
+.dbart .lost{transform-box:fill-box;transform-origin:center}
+.on .dbart .lost{animation:lost 3.4s ease-in-out infinite;animation-delay:calc(var(--i)*-1.1s)}
+@keyframes lost{0%,100%{transform:translate(0,0) rotate(0)}33%{transform:translate(6px,-10px) rotate(4deg)}66%{transform:translate(-6px,6px) rotate(-4deg)}}
+.dbart .q{font-family:'Creepster',Impact,sans-serif;font-size:40px;fill:var(--violet)}
+.on .dbart .q{animation:flicker 3s infinite}
+
+/* pioneiras */
+.witches{list-style:none;padding:0;display:flex;flex-direction:column;gap:8px}
+.witches li{display:flex;gap:18px;align-items:flex-start;font-size:23px;line-height:1.3;color:var(--lav)}
+.witches b{color:var(--text);font-size:26px;font-weight:600}
+.witches em{font-style:normal;color:var(--pumpkin);font-size:22px;font-weight:500;margin-left:8px}
+.witches .star{color:var(--mint);font-size:26px;line-height:1.3;flex:none;opacity:.25}
+.on .witches li{animation:rise .6s cubic-bezier(.2,.8,.2,1) both;animation-delay:calc(var(--i)*220ms + 400ms)}
+.on .witches .star{animation:light .6s ease-out both,twinkle 2.4s ease-in-out infinite;animation-delay:calc(var(--i)*220ms + 600ms),calc(var(--i)*220ms + 1.4s)}
+@keyframes light{to{opacity:1;text-shadow:0 0 14px rgba(191,242,221,.8)}}
+@keyframes twinkle{0%,100%{opacity:1}50%{opacity:.45}}
+.brtag{font-size:24px;font-weight:700;letter-spacing:5px;text-transform:uppercase;color:var(--mint)}
+.card p.sm{font-size:24px;line-height:1.36}
+.card p.sm b{color:var(--text);font-weight:600}
+
+/* grimório 4x2 */
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:24px}
+.grid4 .spell{padding:26px 28px}
+.grid4 .spell h3{font-size:31px}
+.grid4 .spell p{font-size:25px;line-height:1.36}
+
+/* ---------- controles ---------- */
+.bar{position:fixed;left:0;right:0;bottom:0;height:5px;background:rgba(255,255,255,.06);z-index:20}
+.bar i{display:block;height:100%;background:var(--pumpkin);width:0;transition:width .5s ease}
+.ctrl{position:fixed;right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(16px + env(safe-area-inset-bottom,0px));display:flex;gap:8px;align-items:center;z-index:20;opacity:.35;transition:opacity .3s}
+.ctrl:hover,.ctrl:focus-within{opacity:1}
+.ctrl button{font:600 14px 'Outfit',Arial,sans-serif;color:var(--text);background:rgba(52,44,56,.92);border:1px solid var(--line);border-radius:999px;padding:8px 14px;cursor:pointer}
+.ctrl button:hover{border-color:var(--pumpkin)}
+.ctrl .count{font:600 14px 'Outfit',Arial,sans-serif;color:var(--muted);min-width:56px;text-align:center}
+.notes{position:fixed;left:calc(16px + env(safe-area-inset-left,0px));right:calc(16px + env(safe-area-inset-right,0px));bottom:calc(64px + env(safe-area-inset-bottom,0px));max-width:900px;margin:0 auto;background:rgba(18,15,18,.95);border:1px solid var(--line);border-radius:16px;padding:18px 22px;font-size:17px;line-height:1.55;color:var(--lav);z-index:21;max-height:40vh;overflow:auto}
+.notes b{display:block;font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--pumpkin);margin-bottom:6px}
+.hint{position:fixed;left:50%;top:calc(16px + env(safe-area-inset-top,0px));transform:translateX(-50%);font-size:14px;color:var(--lav);background:rgba(18,15,18,.9);border:1px solid var(--line);border-radius:999px;padding:8px 16px;z-index:20;animation:hint 5s ease 1s both;pointer-events:none;white-space:nowrap}
+@keyframes hint{0%{opacity:0}10%,80%{opacity:1}100%{opacity:0}}
+
+@media (prefers-reduced-motion: reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;animation-delay:0s!important;transition-duration:.01ms!important}
+  .term div{width:auto!important}
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <symbol id="ghost" viewBox="0 0 240 330">
+      <path d="M10 312 V150 C10 62 62 10 120 10 C178 10 230 62 230 150 V312 L205 332 L180 312 L155 332 L130 312 L105 332 L80 312 L55 332 L30 312 Z" fill="#bff2dd"/>
+      <ellipse class="blink" cx="80" cy="130" rx="17" ry="22" fill="#231e22"/>
+      <ellipse class="blink" cx="160" cy="130" rx="17" ry="22" fill="#231e22"/>
+    </symbol>
+    <symbol id="batshape" viewBox="0 0 110 56">
+      <path d="M55 20 C48 6 30 4 18 10 C24 14 26 20 22 26 C14 22 6 24 0 30 C14 30 22 36 26 44 C34 36 44 36 50 42 C52 34 54 30 55 30 C56 30 58 34 60 42 C66 36 76 36 84 44 C88 36 96 30 110 30 C104 24 96 22 88 26 C84 20 86 14 92 10 C80 4 62 6 55 20 Z" fill="#120f12"/>
+    </symbol>
+  </defs>
+</svg>
+
+<div class="deck" id="deck">
+<div class="stage" id="stage">
+
+<!-- 1 CAPA -->
+<section class="slide dark center" id="capa" data-title="Cover">
+  <svg class="bat" style="top:150px;--d:12s" viewBox="0 0 110 56" aria-hidden="true"><path d="M55 20 C48 6 30 4 18 10 C24 14 26 20 22 26 C14 22 6 24 0 30 C14 30 22 36 26 44 C34 36 44 36 50 42 C52 34 54 30 55 30 C56 30 58 34 60 42 C66 36 76 36 84 44 C88 36 96 30 110 30 C104 24 96 22 88 26 C84 20 86 14 92 10 C80 4 62 6 55 20 Z" fill="#4d4256"/></svg>
+  <svg class="bat" style="top:90px;--d:15s;--dl:4s;width:70px" viewBox="0 0 110 56" aria-hidden="true"><path d="M55 20 C48 6 30 4 18 10 C24 14 26 20 22 26 C14 22 6 24 0 30 C14 30 22 36 26 44 C34 36 44 36 50 42 C52 34 54 30 55 30 C56 30 58 34 60 42 C66 36 76 36 84 44 C88 36 96 30 110 30 C104 24 96 22 88 26 C84 20 86 14 92 10 C80 4 62 6 55 20 Z" fill="#4d4256"/></svg>
+  <svg aria-label="A ghost coming out of a laptop with lines of code" viewBox="0 0 620 580" style="position:absolute;left:1160px;top:240px;width:620px;height:580px">
+    <circle cx="310" cy="190" r="210" fill="#bff2dd" opacity="0.07" class="float"/>
+    <circle cx="310" cy="190" r="150" fill="#bff2dd" opacity="0.07"/>
+    <rect x="10" y="550" width="600" height="14" rx="7" fill="#4d4256"/>
+    <rect x="40" y="300" width="540" height="250" rx="18" fill="#2d2630" stroke="#8a86c0" stroke-width="6"/>
+    <rect x="100" y="360" width="190" height="14" rx="7" fill="#f2a65a"/>
+    <rect x="100" y="400" width="330" height="14" rx="7" fill="#7aa7e6"/>
+    <rect x="100" y="440" width="230" height="14" rx="7" fill="#8a86c0"/>
+    <rect x="100" y="480" width="380" height="14" rx="7" fill="#8a86c0"/>
+    <g class="float">
+      <path d="M200 322 V170 C200 82 252 30 310 30 C368 30 420 82 420 170 V322 L395 342 L370 322 L345 342 L320 322 L295 342 L270 322 L245 342 L220 322 Z" fill="#bff2dd"/>
+      <ellipse class="blink" cx="270" cy="150" rx="17" ry="22" fill="#231e22"/>
+      <ellipse class="blink" cx="350" cy="150" rx="17" ry="22" fill="#231e22"/>
+      <ellipse cx="310" cy="205" rx="14" ry="20" fill="#231e22"/>
+    </g>
+  </svg>
+  <p class="eyebrow rise" style="--i:0">Dados in Rio · Halloween</p>
+  <h1 class="flicker rise" style="--i:1">The haunted house of legacy systems</h1>
+  <p class="lead rise" style="--i:2">How to map an undocumented system and still sleep at night</p>
+  <p class="byline rise" style="--i:3">Nathália Dumit · Data Engineer</p>
+  <aside>Opening: good afternoon, witches and wizards of data. The previous talk was about the ETL ghost nobody sees. My story is similar, except my haunted house is a legacy system stored in DBF files, with no documentation, which I joined in December 2025. I will tell you how I mapped the house, which ghosts I found, how I make sure the numbers match, and at the end I leave a few spells for anyone who wants to get here too.</aside>
+</section>
+
+<!-- 2 QUEM -->
+<section class="slide plum" id="quem" data-title="Who is leading the way" style="gap:40px">
+  <p class="eyebrow rise" style="--i:0">Who is leading the way</p>
+  <h2 class="rise" style="--i:1">From Economics to data</h2>
+  <div class="row" style="gap:24px">
+    <div class="card tight rise" style="--i:2"><p class="num">1</p><h3>Economics</h3><p>Statistics, root-cause thinking and a view of flows. Not a single database class.</p></div>
+    <div class="card tight rise" style="--i:3"><p class="num">2</p><h3>Economia das Minas</h3><p>For 5 years I have run this volunteer community and turned complex topics into something accessible.</p></div>
+    <div class="card tight rise" style="--i:4"><p class="num">3</p><h3>Data analysis</h3><p>Almost 3 years as an analyst. Python, SQL and automation learned by solving real bottlenecks.</p></div>
+    <div class="card tight rise" style="--i:5"><p class="num">4</p><h3>Data engineering</h3><p>Ten months in: an undocumented legacy system and nobody who knew it end to end.</p></div>
+  </div>
+  <div class="route" aria-hidden="true">
+    <div class="track"></div><div class="trail"></div>
+    <svg class="walker" viewBox="0 0 40 40"><path d="M4 34 L20 2 L36 34 Z" fill="#4b2a6b" stroke="#f2a65a" stroke-width="3" stroke-linejoin="round"/><rect x="0" y="32" width="40" height="6" rx="3" fill="#f2a65a"/></svg>
+  </div>
+  <div class="band rise" style="--i:6"><p>With no training in relational modeling, I deduced keys, links and cardinalities by watching how the data behaves.</p></div>
+  <p class="foot">Dados in Rio · Halloween · Nathália Dumit</p>
+  <aside>Who I am on this route. I have a degree in Economics, which gave me statistics and the habit of investigating causes, but no class on databases or relational modeling. For five years I have run Economia das Minas, a volunteer community, where I learned to turn complex topics into something people understand. I spent almost three years as a data analyst, learning Python, SQL and automation because I had real bottlenecks to solve. In December 2025 I joined a travel company and found a legacy system with no documentation and nobody who knew the whole structure. I did not want to operate blind: I rebuilt the logic by observing the data. That is where the house became haunted.</aside>
+</section>
+
+<!-- 3 CHEGADA -->
+<section class="slide plum" id="chegada" data-title="Stop 1">
+  <div class="qs" aria-hidden="true">
+    <span style="left:1500px;top:560px;font-size:120px;--dl:0s">?</span>
+    <span style="left:1720px;top:700px;font-size:80px;--dl:1.6s">?</span>
+    <span style="left:1380px;top:820px;font-size:70px;--dl:3.1s">?</span>
+  </div>
+  <svg class="spider" viewBox="0 0 90 420" aria-hidden="true">
+    <g class="drop">
+      <line x1="45" y1="-400" x2="45" y2="350" stroke="#8a86c0" stroke-width="2"/>
+      <g transform="translate(45 370)">
+        <path d="M-12 -4 L-34 -20 M-12 2 L-38 0 M-12 8 L-34 22 M-10 12 L-24 34 M12 -4 L34 -20 M12 2 L38 0 M12 8 L34 22 M10 12 L24 34" stroke="#ebe6f0" stroke-width="4" stroke-linecap="round" fill="none"/>
+        <ellipse cx="0" cy="4" rx="16" ry="20" fill="#ebe6f0"/>
+        <circle cx="-6" cy="-2" r="3.5" fill="#231e22"/><circle cx="6" cy="-2" r="3.5" fill="#231e22"/>
+      </g>
+    </g>
+  </svg>
+  <p class="eyebrow rise" style="--i:0">Stop 1 · December 2025</p>
+  <h2 class="rise" style="--i:1">I arrived at a house with no floor plan</h2>
+  <div class="row" style="width:1340px">
+    <div class="card rise" style="--i:2"><h3>No documentation</h3><p>Everything stored in DBF files. Nobody knew how the tables connected.</p></div>
+    <div class="card rise" style="--i:3"><h3>Whoever knew, left</h3><p>The knowledge walked out with the person. The system kept running.</p></div>
+    <div class="card rise" style="--i:4"><h3>Manual routine</h3><p>Datasets and calculations built by hand every day, with a risk of typing errors.</p></div>
+  </div>
+  <p class="foot">Dados in Rio · Halloween · Nathália Dumit</p>
+  <aside>When I arrived, there was no map. The system keeps everything in DBF files, an old format, and the person who knew how the tables related was no longer there. On top of that, daily datasets and calculations were put together by hand. That was the starting point: a big, dark house with no floor plan. And spiders.</aside>
+</section>
+
+<!-- 3b BANCOS -->
+<section class="slide dark" id="bancos" data-title="Quick class" style="gap:30px">
+  <p class="eyebrow rise" style="--i:0">Stop 1½ · quick horror class</p>
+  <h2 class="rise" style="--i:1">Relational × NoSQL × my DBF</h2>
+  <div class="row" style="gap:28px">
+    <div class="card db rise" style="--i:2">
+      <svg class="dbart rel" viewBox="0 0 360 150" aria-hidden="true">
+        <rect x="10" y="20" width="110" height="110" rx="12"/><rect x="240" y="20" width="110" height="110" rx="12"/>
+        <line x1="10" y1="52" x2="120" y2="52"/><line x1="240" y1="52" x2="350" y2="52"/>
+        <text x="65" y="44">CUSTOMER</text><text x="295" y="44">ORDER</text>
+        <text x="65" y="84" class="k">id (key)</text><text x="295" y="84" class="k">customer_id</text>
+        <path class="link" d="M120 80 C170 80 190 80 240 80"/>
+      </svg>
+      <h3>Relational (SQL)</h3>
+      <p>Tables linked by keys. The database itself guarantees that every order points to a customer that exists.</p>
+      <p class="ex">Postgres · SQL Server · MySQL</p>
+    </div>
+    <div class="card db rise" style="--i:3">
+      <svg class="dbart doc" viewBox="0 0 360 150" aria-hidden="true">
+        <g class="sheet" style="--i:0"><rect x="40" y="14" width="200" height="120" rx="12"/><text x="58" y="48">{ "customer": "Ana",</text><text x="58" y="78">  "orders": [ … ] }</text></g>
+        <g class="sheet" style="--i:1"><rect x="130" y="34" width="200" height="104" rx="12"/><text x="148" y="68">{ "customer": "Bia",</text><text x="148" y="98">  "orders": [ … ] }</text></g>
+      </svg>
+      <h3>Non-relational (NoSQL)</h3>
+      <p>Documents, key-value or graphs. Each record carries what it needs. Flexible and good at scaling.</p>
+      <p class="ex">MongoDB · Redis · Neo4j</p>
+    </div>
+    <div class="card db haunted rise" style="--i:4">
+      <svg class="dbart dbf" viewBox="0 0 360 150" aria-hidden="true">
+        <g class="lost" style="--i:0"><rect x="14" y="30" width="90" height="80" rx="10"/><line x1="14" y1="56" x2="104" y2="56"/></g>
+        <g class="lost" style="--i:1"><rect x="135" y="14" width="90" height="80" rx="10"/><line x1="135" y1="40" x2="225" y2="40"/></g>
+        <g class="lost" style="--i:2"><rect x="256" y="44" width="90" height="80" rx="10"/><line x1="256" y1="70" x2="346" y2="70"/></g>
+        <text x="118" y="140" class="q">?</text><text x="238" y="128" class="q">?</text>
+      </svg>
+      <h3>The house's DBF</h3>
+      <p>It looks relational: it has tables and columns. But no link is declared anywhere. Whoever knew how to join them was the program, and whoever knew the program.</p>
+      <p class="ex">dBase format, from the 80s</p>
+    </div>
+  </div>
+  <div class="band rise" style="--i:5"><p>Relational is a registry office: every family tie on record. NoSQL is everyone carrying their own birth certificate in a bag. This DBF was an album of 652 photos with no captions.</p></div>
+  <p class="foot">Dados in Rio · Halloween · Nathália Dumit</p>
+  <aside>For anyone outside the field, a thirty-second class to understand the size of the scare. In a relational database, tables are linked by keys, and the database itself guarantees those links: there is no order from a customer that does not exist. It is a registry office, every family tie is on record. In non-relational databases, NoSQL, each record carries what it needs, like a document; it is flexible and scales well. Now, what I found: DBF files, a format from the 80s. It looks relational, it has tables and columns, but no link is declared anywhere. Who knew how to connect one table to another was the program, and the person who knew the program. It is a family album with 652 photos and no captions. And nobody to ask who is who.</aside>
+</section>
+
+<!-- 4 SUSTO -->
+<section class="slide dark" id="susto" data-title="Stop 2">
+  <p class="eyebrow rise" style="--i:0">Stop 2 · the scare</p>
+  <h2 class="rise shake" style="--i:1">652 files. No map.</h2>
+  <div class="row">
+    <div class="card rise" style="--i:2;border:0;border-top:8px solid var(--mint);gap:12px"><p class="big" style="color:var(--mint)" data-count="652">652</p><p>table files read in the system folder</p></div>
+    <div class="card rise" style="--i:3;border:0;border-top:8px solid var(--pumpkin);gap:12px"><p class="big" style="color:var(--pumpkin)" data-count="493" data-delay="250">493</p><p>were copies of other tables, scattered across different folders</p></div>
+    <div class="card rise" style="--i:4;border:0;border-top:8px solid var(--blue);gap:12px"><p class="big" style="color:var(--blue)" data-count="82" data-delay="500">82</p><p>of the 159 distinct tables had no identifiable key</p></div>
+  </div>
+  <p class="foot">Dados in Rio · Halloween · Nathália Dumit</p>
+  <aside>Before any analysis, I needed to know what existed. I read every table file in the folder: 652. Of those, 493 were copies of other structures, leaving 159 distinct tables. And 82 of them had no column that could serve as a key, the one that identifies each row. Without a key, you cannot even tell how to link one table to another. This is where I screamed inside.</aside>
+</section>
+
+<!-- 5 CEMITÉRIO -->
+<section class="slide plum" id="cemiterio" data-title="Stop 3">
+  <p class="eyebrow rise" style="--i:0">Stop 3 · the graveyard</p>
+  <h2 class="rise" style="--i:1">The ghost tables</h2>
+  <div class="row">
+    <div class="tomb" style="--i:0"><svg class="wisp" viewBox="0 0 240 330" aria-hidden="true"><use href="#ghost"/></svg><p class="rip">R.I.P.</p><h3>Empty since 2020</h3><p>Tables created and never used: zero rows since 2020 and 2021.</p></div>
+    <div class="tomb" style="--i:1"><svg class="wisp" viewBox="0 0 240 330" aria-hidden="true"><use href="#ghost"/></svg><p class="rip">R.I.P.</p><h3>Frozen since 2008</h3><p>Message tables nobody has updated in almost 20 years.</p></div>
+    <div class="tomb" style="--i:2"><svg class="wisp" viewBox="0 0 240 330" aria-hidden="true"><use href="#ghost"/></svg><p class="rip">R.I.P.</p><h3>1,298 files ignored</h3><p>Orphan indexes, temporary files and files with read errors.</p></div>
+    <div class="tomb" style="--i:3"><svg class="wisp" viewBox="0 0 240 330" aria-hidden="true"><use href="#ghost"/></svg><p class="rip">R.I.P.</p><h3>493 copies</h3><p>The same structure repeated in different folders, with no hint of which one counts.</p></div>
+  </div>
+  <p class="foot">Dados in Rio · Halloween · Nathália Dumit</p>
+  <aside>The map also showed the graveyard. There are tables that never received any data, since 2020 and 2021. There are message tables frozen since 2008. There are more than a thousand files the reader had to ignore: orphan indexes, temporary files, files with errors. And 493 copies of the same structure, with no indication of which is the real one. Part of the job is deciding what is alive.</aside>
+</section>
+
+<!-- 6 EXORCISMO -->
+<section class="slide dark" id="exorcismo" data-title="Stop 4" style="gap:40px">
+  <p class="eyebrow rise" style="--i:0">Stop 4 · the exorcism</p>
+  <h2 class="rise" style="--i:1">Let the data say who links to whom</h2>
+  <div class="row" style="gap:24px">
+    <div class="card tight rise" style="--i:2"><p class="num">1</p><h3>Read</h3><p>Each table, with a profile of each column.</p></div>
+    <div class="card tight rise" style="--i:3"><p class="num">2</p><h3>Find the key</h3><p>A column, or combination, that never repeats.</p></div>
+    <div class="card tight rise" style="--i:4"><p class="num">3</p><h3>Test the links</h3><p>How many values of A exist in B?</p></div>
+    <div class="card tight rise" style="--i:5"><p class="num">4</p><h3>Grade them</h3><p>High, medium or low confidence.</p></div>
+  </div>
+  <div class="band rise" style="--i:6;display:flex;gap:40px;align-items:center">
+    <p style="font-family:'Creepster',Impact,sans-serif;font-weight:400;font-size:72px;line-height:1;letter-spacing:2px;color:var(--deep);width:230px" data-count="965" data-delay="900">965</p>
+    <p style="flex:1;font-size:32px;font-weight:500">links proposed: 310 high confidence, 585 medium and 70 low. The whole map runs in about 10 minutes.</p>
+    <svg class="graph" viewBox="0 0 260 110" style="width:260px;height:110px;flex:none" aria-hidden="true">
+      <line x1="30" y1="55" x2="110" y2="20" style="--i:0"/><line x1="30" y1="55" x2="110" y2="90" style="--i:1"/>
+      <line x1="110" y1="20" x2="200" y2="40" style="--i:2"/><line x1="110" y1="90" x2="200" y2="40" style="--i:3"/>
+      <line x1="200" y1="40" x2="240" y2="95" style="--i:4"/>
+      <circle cx="30" cy="55" r="12" style="--i:0"/><circle cx="110" cy="20" r="10" style="--i:1"/><circle cx="110" cy="90" r="10" style="--i:2"/><circle cx="200" cy="40" r="12" style="--i:3"/><circle cx="240" cy="95" r="8" style="--i:4"/>
+    </svg>
+  </div>
+  <p class="foot">The script stores only statistics, no customer data · Dados in Rio · Halloween</p>
+  <aside>This is where the engineering comes in. Since there was no documentation, I let the data speak. For each table, the script finds the key. Then it tests, for each column, whether its values exist in another table, and computes the share that match. The closer to 100%, the higher the confidence. In the end, 965 proposed links, 310 of them high confidence. It stores no customer data, only statistics, and runs in about 10 minutes. Time for a coffee.</aside>
+</section>
+
+<!-- 7 PEGADINHAS -->
+<section class="slide plum" id="pegadinhas" data-title="Stop 5" style="gap:40px">
+  <div class="peek" aria-hidden="true"><svg viewBox="0 0 240 330"><use href="#ghost"/></svg></div>
+  <p class="eyebrow rise" style="--i:0">Stop 5 · the traps</p>
+  <h2 class="rise" style="--i:1">The same field, several meanings</h2>
+  <div class="grid2">
+    <div class="card pop" style="--i:0;padding:36px 40px;gap:12px"><h3>QTY</h3><p>In hotels it is nights. In other services it is people.</p></div>
+    <div class="card pop" style="--i:1;padding:36px 40px;gap:12px"><h3>Cancelled</h3><p>It is not one status. It is three different codes.</p></div>
+    <div class="card pop" style="--i:2;padding:36px 40px;gap:12px"><h3>Rows with an asterisk</h3><p>Extras that do not exist in the catalog and change the room count.</p></div>
+    <div class="card pop" style="--i:3;padding:36px 40px;gap:12px"><h3>Passengers</h3><p>The system sums people per row, not real people. To count people, only the booking file record works.</p></div>
+  </div>
+  <p class="foot">Dados in Rio · Halloween · Nathália Dumit</p>
+  <aside>The map says how tables link, but not what each field means. This is where the business ghosts live. The quantity field is nights for hotels and people for other services. Cancellation has three codes. Some rows with an asterisk are extras outside the catalog, and they change the room count. And the system report sums people per row, which is not the number of passengers. Each of these rules ended up written in code.</aside>
+</section>
+
+<!-- 8 PROVA -->
+<section class="slide mintbg" id="prova" data-title="Stop 6">
+  <p class="eyebrow rise" style="--i:0">Stop 6 · the trial by fire</p>
+  <h2 class="rise" style="--i:1">If it does not match the system report, it is not done</h2>
+  <div class="row rise" style="--i:2;gap:64px;align-items:center">
+    <p style="font-family:'Creepster',Impact,sans-serif;font-size:200px;line-height:1;letter-spacing:2px;color:var(--deep);flex:none;width:760px;white-space:nowrap"><span data-count="51" data-delay="400">51</span> of 51</p>
+    <div style="display:flex;flex-direction:column;gap:24px">
+      <p style="font-size:36px;line-height:1.35">booking files checked one by one against the system's production report: adults and children matched in all of them.</p>
+      <p style="font-size:30px;line-height:1.4;color:#3a2a4a">Room nights also reproduce the report month by month. A difference is only accepted once it is explained.</p>
+    </div>
+  </div>
+  <div class="stamp" aria-hidden="true">Verified</div>
+  <p class="foot">Dados in Rio · Halloween · Nathália Dumit</p>
+  <aside>The golden rule: no number goes out if it does not match a source the operation already trusts, in this case the system's own production report. To count passengers, I took booking files from one hotel, compared them with the report line by line, and the rule was only accepted when adults and children matched across all 51 files. If a difference exists, it has to be explained, not hidden.</aside>
+</section>
+
+<!-- 9 SAÍDAS -->
+<section class="slide dark" id="saidas" data-title="Stop 7">
+  <div class="torch" aria-hidden="true"><i></i></div>
+  <p class="eyebrow rise" style="--i:0">Stop 7 · the lights on</p>
+  <h2 class="rise" style="--i:1">The map produced tools that run by themselves</h2>
+  <div class="row">
+    <div class="card glow rise" style="--i:2;border-left:0;border-right:0;border-bottom:0"><h3>Single-file dashboard</h3><p>HTML with the data embedded. Opens on any computer, no server needed.</p></div>
+    <div class="card glow rise" style="--i:3;border-left:0;border-right:0;border-bottom:0"><h3>Excel export</h3><p>Bookings by file, hotels and agencies month by month, with the screen's filters.</p></div>
+    <div class="card glow rise" style="--i:4;border-left:0;border-right:0;border-bottom:0"><h3>Refresh with a lock</h3><p>If reading the database fails, the dashboard is not generated and the reason goes to the log.</p></div>
+  </div>
+  <p class="foot">Dados in Rio · Halloween · Nathália Dumit</p>
+  <aside>With the map and the rules in place, the tools stopped being fragile. The dashboard is a single HTML file with the data embedded, so it opens on any machine. It exports to Excel whatever is on screen. And it has a lock: if the database refresh fails, it is not generated with stale data, and the reason stays in the log. Better no dashboard than a lying dashboard.</aside>
+</section>
+
+<!-- 10 CÓPIA VELHA -->
+<section class="slide plum" id="copiavelha" data-title="Stop 8" style="gap:36px">
+  <p class="eyebrow rise" style="--i:0">Stop 8 · “it works on my machine”</p>
+  <h2 class="rise" style="--i:1">The bug that only existed in one folder</h2>
+  <div class="row" style="gap:24px">
+    <div class="card rise" style="--i:2;padding:32px;gap:12px"><h3 style="font-size:34px">The symptom</h3><p>The Excel file should come out with new tabs. Only four came out.</p></div>
+    <div class="card rise" style="--i:3;padding:32px;gap:12px"><h3 style="font-size:34px">The cause</h3><p>The .bat ran an old copy of the script, in another folder.</p></div>
+    <div class="card rise" style="--i:4;padding:32px;gap:12px"><h3 style="font-size:34px">The proof</h3><p>The log did not have the new step. Only the log gave the ghost away.</p></div>
+  </div>
+  <div class="term" aria-label="Terminal showing the old script being run">
+    <div style="--n:28;--dl:1.2s;--t:1s">&gt; refresh_dashboard.bat</div>
+    <div class="err" style="--n:51;--dl:2.4s;--t:1.6s">running: old_folder\\script_v2_final_THISTIME.py</div>
+    <div style="--n:40;--dl:4.2s;--t:1.2s">tabs generated: 4 ... where is the rest??</div>
+  </div>
+  <div class="band rise" style="--i:5"><p>Lesson: one place for the code, and a log that says which version ran.</p></div>
+  <p class="foot">Dados in Rio · Halloween · Nathália Dumit</p>
+  <aside>A real case. I had delivered the new version of the export, with new tabs, but only four came out. It worked on my machine, of course. I asked for the log: the script that ran was an old copy, in another folder, called by the refresh file. Everyone has had a script_v2_final_THISTIME in their life. The log is what gave the ghost away. Since then: one folder, one version, and the log always records which script ran.</aside>
+</section>
+
+<!-- 11b PIONEIRAS -->
+<section class="slide plum" id="pioneiras" data-title="Pioneers" style="gap:22px">
+  <p class="eyebrow rise" style="--i:0">Stop 9 · the witches who came before</p>
+  <h2 class="rise" style="--i:1">None of them studied IT</h2>
+  <div class="row" style="gap:40px;align-items:stretch">
+    <ul class="witches" style="flex:1.7">
+      <li style="--i:0"><span class="star">✦</span><div><b>Margaret Hamilton</b> <em>Mathematics and Philosophy</em><br>led the Apollo software and coined “software engineering”</div></li>
+      <li style="--i:1"><span class="star">✦</span><div><b>Agnes Meyer Driscoll</b> <em>Mathematics, Physics, languages and music</em><br>broke US Navy codes without a manual</div></li>
+      <li style="--i:2"><span class="star">✦</span><div><b>Joan Clarke</b> <em>Mathematics</em><br>broke codes at Bletchley Park; Cambridge denied her degree because she was a woman</div></li>
+      <li style="--i:3"><span class="star">✦</span><div><b>Dorothy Vaughan</b> <em>Mathematics, was a teacher</em><br>taught herself FORTRAN from books and taught the team at NASA</div></li>
+      <li style="--i:4"><span class="star">✦</span><div><b>Florence Nightingale</b> <em>studied at home</em><br>statistics and charts of hospital data that changed public health</div></li>
+      <li style="--i:5"><span class="star">✦</span><div><b>Katherine Johnson</b> <em>Mathematics and French</em><br>calculated spaceflight trajectories</div></li>
+      <li style="--i:6"><span class="star">✦</span><div><b>Mary Jackson</b> <em>Mathematics and Physical Sciences</em><br>went to court to be allowed to study and became NASA's first Black female engineer</div></li>
+    </ul>
+    <div style="flex:1;display:flex;flex-direction:column;gap:24px">
+      <p class="brtag rise" style="--i:3">And in Brazil</p>
+      <div class="card rise" style="--i:4;padding:30px 34px;gap:10px"><h3>Liane Tarouco</h3><p class="sm"><b>Physics</b>, UFRGS. Wrote in 1977 the first Brazilian book on data communication networks. The only Brazilian in the Internet Hall of Fame.</p></div>
+      <div class="card rise" style="--i:5;padding:30px 34px;gap:10px"><h3>Sonia Guimarães</h3><p class="sm"><b>Physics</b>, UFSCar. First Black woman with a PhD in Physics in Brazil and first Black professor at ITA. Researches semiconductors and infrared sensors.</p></div>
+    </div>
+  </div>
+  <div class="band rise" style="--i:7;padding:22px 40px"><p style="font-size:30px">The pattern: reasoning from another field + curiosity. The rest is learned on the job.</p></div>
+  <p class="foot">Dados in Rio · Halloween · Nathália Dumit</p>
+  <aside>Something that gave me courage: none of the pioneers of computing studied computing, if only because those degrees did not exist. Margaret Hamilton studied Mathematics with Philosophy, learned to program at MIT and led the software of the Apollo missions. Agnes Driscoll combined mathematics with languages to break US Navy codes. Joan Clarke was a cryptanalyst at Bletchley Park, and Cambridge did not even give her the full degree, because she was a woman. Dorothy Vaughan was a teacher and taught herself FORTRAN by reading books. Florence Nightingale did statistics and charts that changed hospitals. Katherine Johnson calculated space trajectories. Mary Jackson had to go to court to be allowed to study and became NASA's first Black female engineer. Here in Brazil, Liane Tarouco was a physicist and wrote, in 1977, the first Brazilian book on data networks; she is the only Brazilian in the Internet Hall of Fame. And Sonia Guimarães, a physicist, was the first Black woman with a PhD in Physics in the country and the first Black professor at ITA. The pattern is clear: a base of reasoning from another field, plus curiosity. In my case, Economics.</aside>
+</section>
+
+<!-- 12 GRIMÓRIO -->
+<section class="slide dark" id="grimorio" data-title="Bonus · grimoire" style="gap:36px">
+  <p class="eyebrow rise" style="--i:0">Bonus stop · the grimoire (no deals with the devil)</p>
+  <h2 class="rise" style="--i:1">8 spells to get there</h2>
+  <div class="grid4 flipwrap">
+    <div class="spell flip" style="--i:0"><span class="tag">Spell 1</span><h3>Start from a pain, not a course</h3><p>I learned Python because a spreadsheet haunted me every single day.</p></div>
+    <div class="spell flip" style="--i:1"><span class="tag">Spell 2</span><h3>Read the data before you code</h3><p>Counts, distincts, nulls. Data is a gossip: it tells everything, you just have to ask.</p></div>
+    <div class="spell flip" style="--i:2"><span class="tag">Spell 3</span><h3>Be the nitpicker of numbers</h3><p>Did not match the official report? It is not done. “Almost matches” is a scare postponed.</p></div>
+    <div class="spell flip" style="--i:3"><span class="tag">Spell 4</span><h3>Bring your baggage</h3><p>Your old field is not a delay. It is a superpower under another name.</p></div>
+    <div class="spell flip" style="--i:4"><span class="tag">Spell 5</span><h3>AI is an intern, not an oracle</h3><p>It writes fast; I am the one who checks and signs off the number.</p></div>
+    <div class="spell flip" style="--i:5"><span class="tag">Spell 6</span><h3>Leave a trail</h3><p>Log, version, date. Future you remembers absolutely nothing.</p></div>
+    <div class="spell flip" style="--i:6"><span class="tag">Spell 7</span><h3>Get the rule out of your head</h3><p>A rule that lives only in your head goes on vacation with you. Put it in code.</p></div>
+    <div class="spell flip" style="--i:7"><span class="tag">Spell 8</span><h3>Find your coven</h3><p>Community, bootcamp, study group. Screaming together is more fun.</p></div>
+  </div>
+  <p class="foot">Dados in Rio · Halloween · Nathália Dumit</p>
+  <aside>The question I get most: okay, but how do I get there? There is no shortcut, but there are spells. One: start from a real pain, not a course. Two: before writing code, read the data; counts, distincts, nulls. Three: be the nitpicker of numbers; if it does not match an official source, it is not done, and it is only done after QA. Four: bring your baggage; the eye of your previous field is what sets you apart. Five: use AI, I use it a lot, but as an intern; I am the one who checks and signs off. Six: leave a trail, log, version and date, because future you forgets everything. Seven: take the business rule out of your head and put it in code; if it only exists in your memory, that is how a haunted house is born. Eight: find your coven. Nobody does this alone.</aside>
+</section>
+
+<!-- 14 POÇÃO -->
+<section class="slide plum" id="pocao" data-title="Bonus · potion">
+  <p class="eyebrow rise" style="--i:0">Bonus stop · the potion</p>
+  <h2 class="rise" style="--i:1">Potion recipe (yields one career)</h2>
+  <div class="potion">
+    <ul class="ingredients">
+      <li style="--i:0"><b>1</b>real pain from work, well matured</li>
+      <li style="--i:1"><b>2</b>spoons of SQL, GROUP BY to taste</li>
+      <li style="--i:2"><b>1</b>cup of Python with pandas</li>
+      <li style="--i:3"><b>1</b>pinch of statistics (Economics sends regards)</li>
+      <li style="--i:4"><b>1</b>official report to check everything against</li>
+      <li style="--i:5"><b>∞</b>curiosity and coffee in suspicious amounts</li>
+    </ul>
+    <svg class="cauldron" viewBox="0 0 560 520" aria-label="A bubbling cauldron">
+      <path class="steam" style="--dl:0s" d="M200 150 C180 110 220 90 200 50"/>
+      <path class="steam" style="--dl:1.2s" d="M290 140 C270 100 310 80 290 30"/>
+      <path class="steam" style="--dl:2.2s" d="M370 150 C350 110 390 90 370 50"/>
+      <circle class="bubble" cx="210" cy="210" r="16" style="--dl:0s"/>
+      <circle class="bubble" cx="280" cy="215" r="22" style="--dl:.7s"/>
+      <circle class="bubble" cx="350" cy="210" r="14" style="--dl:1.3s"/>
+      <circle class="bubble" cx="245" cy="215" r="10" style="--dl:1.9s"/>
+      <circle class="bubble" cx="320" cy="212" r="12" style="--dl:2.3s"/>
+      <ellipse class="brew" cx="280" cy="220" rx="210" ry="40" fill="#bff2dd"/>
+      <path d="M70 220 C70 400 150 470 280 470 C410 470 490 400 490 220 Z" fill="#120f12" stroke="#4d4256" stroke-width="6"/>
+      <ellipse cx="280" cy="220" rx="225" ry="44" fill="none" stroke="#4d4256" stroke-width="16"/>
+      <rect x="150" y="460" width="30" height="50" rx="8" fill="#4d4256"/>
+      <rect x="380" y="460" width="30" height="50" rx="8" fill="#4d4256"/>
+      <text x="280" y="360" text-anchor="middle" font-family="JetBrains Mono, monospace" font-size="30" fill="#f2a65a">print('here')</text>
+    </svg>
+  </div>
+  <p class="foot">Method: stir a little every day. Prep time: a few months and many print('here').</p>
+  <aside>If I had to sum it up as a recipe: one real pain, SQL, Python, a pinch of statistics, an official source to check against and lots of curiosity. Stir a little every day. You do not need to be a genius, you need to be consistent. Prep time is a few months and an embarrassing number of print here in the code. Who has not.</aside>
+</section>
+
+<!-- 15 FIM -->
+<section class="slide dark center" id="fim" data-title="Questions">
+  <svg class="bat" style="top:120px;--d:13s" viewBox="0 0 110 56" aria-hidden="true"><path d="M55 20 C48 6 30 4 18 10 C24 14 26 20 22 26 C14 22 6 24 0 30 C14 30 22 36 26 44 C34 36 44 36 50 42 C52 34 54 30 55 30 C56 30 58 34 60 42 C66 36 76 36 84 44 C88 36 96 30 110 30 C104 24 96 22 88 26 C84 20 86 14 92 10 C80 4 62 6 55 20 Z" fill="#4d4256"/></svg>
+  <svg class="bat" style="top:200px;--d:10s;--dl:3s;width:80px" viewBox="0 0 110 56" aria-hidden="true"><path d="M55 20 C48 6 30 4 18 10 C24 14 26 20 22 26 C14 22 6 24 0 30 C14 30 22 36 26 44 C34 36 44 36 50 42 C52 34 54 30 55 30 C56 30 58 34 60 42 C66 36 76 36 84 44 C88 36 96 30 110 30 C104 24 96 22 88 26 C84 20 86 14 92 10 C80 4 62 6 55 20 Z" fill="#4d4256"/></svg>
+  <svg aria-label="A ghost waving" viewBox="0 0 620 580" style="position:absolute;left:1160px;top:240px;width:620px;height:580px">
+    <circle cx="310" cy="190" r="210" fill="#bff2dd" opacity="0.07"/>
+    <rect x="10" y="550" width="600" height="14" rx="7" fill="#4d4256"/>
+    <rect x="40" y="300" width="540" height="250" rx="18" fill="#2d2630" stroke="#8a86c0" stroke-width="6"/>
+    <rect x="100" y="360" width="190" height="14" rx="7" fill="#f2a65a"/>
+    <rect x="100" y="400" width="330" height="14" rx="7" fill="#7aa7e6"/>
+    <rect x="100" y="440" width="230" height="14" rx="7" fill="#8a86c0"/>
+    <g class="float">
+      <path class="wave" d="M410 190 C450 170 470 130 455 100 C445 90 430 100 432 115 C430 140 415 160 400 168 Z" fill="#bff2dd"/>
+      <path d="M200 322 V170 C200 82 252 30 310 30 C368 30 420 82 420 170 V322 L395 342 L370 322 L345 342 L320 322 L295 342 L270 322 L245 342 L220 322 Z" fill="#bff2dd"/>
+      <ellipse class="blink" cx="270" cy="150" rx="17" ry="22" fill="#231e22"/>
+      <ellipse class="blink" cx="350" cy="150" rx="17" ry="22" fill="#231e22"/>
+      <path d="M280 200 Q310 232 340 200" fill="none" stroke="#231e22" stroke-width="9" stroke-linecap="round"/>
+    </g>
+  </svg>
+  <p class="eyebrow rise" style="--i:0">Dados in Rio · Halloween</p>
+  <h1 class="rise flicker" style="--i:1;font-size:160px">Questions?</h1>
+  <p class="lead rise" style="--i:2">Thank you! If you have a map-less DBF at home, find me afterwards. I promise not to charge for the exorcism.</p>
+  <div class="rise" style="--i:3;display:flex;gap:32px;align-items:center"><div id="qr" class="qr" aria-label="LinkedIn QR code" hidden></div><div style="display:flex;flex-direction:column;gap:8px"><p class="byline">Nathália Dumit</p><a class="li" href="https://www.linkedin.com/in/nathalia-dumit/" target="_blank" rel="noopener">linkedin.com/in/nathalia-dumit</a><p id="qrhint" style="font-size:24px;color:var(--muted)" hidden>point your camera and come say hi</p></div></div>
+  <aside>Open for questions. If asked about tools: the mapper reads the tables, finds the keys and proposes links with a confidence grade; the rest is business rules written in code and checked against system reports. The QR code and the link lead to my LinkedIn.</aside>
+</section>
+
+<div class="fog" aria-hidden="true"></div>
+</div>
+</div>
+
+<div class="bar" aria-hidden="true"><i id="bar"></i></div>
+<div class="hint" aria-hidden="true">← → to navigate · N notes · F full screen</div>
+<div class="notes" id="notes" hidden><b>Speaker notes</b><span id="notesText"></span></div>
+<div class="ctrl">
+  <button id="prev" aria-label="Previous slide">←</button>
+  <span class="count" id="count">1 / 15</span>
+  <button id="next" aria-label="Next slide">→</button>
+  <button id="noteBtn">Notes</button>
+  <button id="fsBtn">Full screen</button>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode-generator/1.4.4/qrcode.min.js"></script>
+<script>
+try{
+  var q=qrcode(0,'M'); q.addData('https://www.linkedin.com/in/nathalia-dumit/'); q.make();
+  var box=document.getElementById('qr');
+  box.innerHTML=q.createSvgTag({cellSize:4,margin:0,scalable:true});
+  var r=box.querySelector('rect'); if(r) r.setAttribute('fill','#ebe6f0');
+  var pth=box.querySelector('path'); if(pth) pth.setAttribute('fill','#231e22');
+  box.hidden=false; document.getElementById('qrhint').hidden=false;
+}catch(e){}
+</script>
+<script>
+(function(){
+  var stage=document.getElementById('stage');
+  var slides=[].slice.call(stage.querySelectorAll('.slide'));
+  var bar=document.getElementById('bar'), count=document.getElementById('count');
+  var notes=document.getElementById('notes'), notesText=document.getElementById('notesText');
+  var reduce=window.matchMedia&&matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var cur=-1, timers=[];
+
+  function fit(){
+    var s=Math.min(innerWidth/1920, innerHeight/1080);
+    stage.style.transform='translate(-50%,-50%) scale('+s+')';
+  }
+  addEventListener('resize',fit); fit();
+
+  function fmt(n){return n.toLocaleString('en-US');}
+  function countUp(el){
+    var target=+el.dataset.count, delay=+(el.dataset.delay||0)+500;
+    if(reduce){el.textContent=fmt(target);return;}
+    el.textContent='0';
+    timers.push(setTimeout(function(){
+      var t0=performance.now(), dur=1400;
+      (function step(now){
+        var p=Math.min(1,(now-t0)/dur), e=1-Math.pow(1-p,3);
+        el.textContent=fmt(Math.round(target*e));
+        if(p<1) requestAnimationFrame(step);
+      })(t0);
+    },delay));
+  }
+
+  function go(i){
+    i=Math.max(0,Math.min(slides.length-1,i));
+    if(i===cur) return;
+    timers.forEach(clearTimeout); timers=[];
+    slides.forEach(function(s,k){ if(k!==i) s.classList.remove('on'); });
+    var s=slides[i];
+    s.classList.remove('on'); void s.offsetWidth; s.classList.add('on');
+    s.querySelectorAll('[data-count]').forEach(countUp);
+    cur=i;
+    bar.style.width=((i+1)/slides.length*100)+'%';
+    count.textContent=(i+1)+' / '+slides.length;
+    var a=s.querySelector('aside'); notesText.textContent=a?a.textContent:'';
+    try{ history.replaceState(null,'','#'+s.id); }catch(e){}
+  }
+
+  function next(){go(cur+1);} function prev(){go(cur-1);}
+  document.getElementById('next').onclick=next;
+  document.getElementById('prev').onclick=prev;
+  function toggleNotes(){ notes.hidden=!notes.hidden; }
+  document.getElementById('noteBtn').onclick=toggleNotes;
+  function fullscreen(){
+    try{
+      if(document.fullscreenElement){ document.exitFullscreen(); }
+      else{ var p=document.documentElement.requestFullscreen&&document.documentElement.requestFullscreen(); if(p&&p.catch) p.catch(function(){}); }
+    }catch(e){}
+  }
+  document.getElementById('fsBtn').onclick=fullscreen;
+
+  addEventListener('keydown',function(e){
+    var k=e.key;
+    if(k==='ArrowRight'||k==='PageDown'||k===' '||k==='Enter'){e.preventDefault();next();}
+    else if(k==='ArrowLeft'||k==='PageUp'||k==='Backspace'){e.preventDefault();prev();}
+    else if(k==='Home'){go(0);} else if(k==='End'){go(slides.length-1);}
+    else if(k==='n'||k==='N'){toggleNotes();}
+    else if(k==='f'||k==='F'){fullscreen();}
+  });
+
+  document.getElementById('deck').addEventListener('click',function(e){
+    if(e.target.closest('.ctrl,a')) return;
+    if(e.clientX>innerWidth*0.35) next(); else prev();
+  });
+  var tx=null;
+  addEventListener('touchstart',function(e){tx=e.touches[0].clientX;},{passive:true});
+  addEventListener('touchend',function(e){
+    if(tx===null) return; var dx=e.changedTouches[0].clientX-tx; tx=null;
+    if(Math.abs(dx)>40){ dx<0?next():prev(); }
+  });
+
+  function fromHash(){
+    var id=(location.hash||'').slice(1), k=-1;
+    slides.forEach(function(s,j){ if(s.id===id) k=j; });
+    return k;
+  }
+  addEventListener('hashchange',function(){ var k=fromHash(); if(k>=0) go(k); });
+  var start=fromHash(); go(start>=0?start:0);
+})();
+</script>
+
+</body></html>
