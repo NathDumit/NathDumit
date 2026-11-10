@@ -24,3 +24,6 @@ node_modules/
 Thumbs.db
 .vscode/
 .idea/
+
+# Claude Code (configurações locais podem conter segredos)
+.claude/
